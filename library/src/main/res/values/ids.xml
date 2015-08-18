@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="id" name="navigation_primary"/>
+    <item type="id" name="navigation_secondary"/>
+
+    <item type="id" name="accounts_primary"/>
+    <item type="id" name="accounts_secondary"/>
+</resources>

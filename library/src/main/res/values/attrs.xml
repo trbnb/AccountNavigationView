@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="AccountNavigationView">
+        <attr name="headerBackground" format="reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="NavigationView">
+        <attr name="itemBackground" format="reference"/>
+        <attr name="itemIconTint" format="reference"/>
+        <attr name="itemTextAppearance" format="reference"/>
+        <attr name="itemTextColor" format="color"/>
+    </declare-styleable>
+</resources>

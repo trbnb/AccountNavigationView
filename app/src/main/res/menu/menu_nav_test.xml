@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:id="@+id/navigation_primary" android:checkableBehavior="single">
+        <item android:id="@+id/nav_first" android:title="Category A" android:icon="@drawable/abc_btn_check_to_on_mtrl_015" android:checked="true"/>
+        <item android:title="Category B" android:icon="@drawable/abc_btn_check_to_on_mtrl_000"/>
+        <item android:title="Category C" android:icon="@drawable/abc_btn_radio_to_on_mtrl_000"/>
+    </group>
+    <item android:id="@+id/navigation_secondary" android:title="Subheader">
+        <menu>
+            <item android:title="Einstellungen"/>
+        </menu>
+    </item>
+
+    <group android:id="@+id/accounts_primary" android:checkableBehavior="single">
+        <item android:id="@+id/acc_first" android:title="@string/not_logged_in" android:checked="true"/>
+        <item android:title="Mathias"/>
+        <item android:title="Jeff"/>
+        <item android:title="Alexander"/>
+    </group>
+
+    <item android:id="@+id/accounts_secondary" android:title="Subheader">
+        <menu>
+            <item android:title="Manage Accounts..."/>
+        </menu>
+    </item>
+
+</menu>
