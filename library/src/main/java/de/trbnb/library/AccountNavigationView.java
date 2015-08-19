@@ -13,7 +13,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.NavigationView;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,12 +21,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * NavigationView that is build to be used with multiple accounts.
  */
-public class AccountNavigationView extends NavigationView {
+public class AccountNavigationView extends NavigationView implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final int ACCOUNT_MENU_ANIMATION_DURATION = 400;
 
@@ -35,15 +38,23 @@ public class AccountNavigationView extends NavigationView {
     private ImageView headerImage;
     private TextView headerText;
     private ImageView headerArrow;
+    private CircleImageView bigCircle;
 
     private boolean accountsAreShown = false;
 
-    private List<Integer> navigationItemIds;
-    private List<Integer> navigationGroupIds;
+    private Set<Integer> navigationItemIds;
+    private Set<Integer> navigationGroupIds;
 
-    private List<Integer> accountItemIds;
-    private List<Integer> accountGroupIds;
+    private Set<Integer> accountItemIds;
+    private Set<Integer> accountGroupIds;
 
+    private int mainNavigationGroup = R.id.navigation_primary;
+    private int mainAccountGroup = R.id.accounts_primary;
+
+    private MenuItem selectedNavigationItem;
+    private MenuItem selectedAccountItem;
+
+    private OnNavigationItemSelectedListener navigationItemSelectedListener;
     private DisplayListener listener;
 
     public AccountNavigationView(Context context) {
@@ -70,18 +81,24 @@ public class AccountNavigationView extends NavigationView {
     }
 
     private void init(){
-        navigationItemIds = new ArrayList<>();
-        navigationGroupIds = new ArrayList<>();
+        navigationItemIds = new HashSet<>();
+        navigationGroupIds = new HashSet<>();
 
-        accountItemIds = new ArrayList<>();
-        accountGroupIds = new ArrayList<>();
+        accountItemIds = new HashSet<>();
+        accountGroupIds = new HashSet<>();
 
         inflateHeaderView(R.layout.nav_header);
 
         header = (FrameLayout) findViewById(R.id.nav_header);
+        bigCircle = (CircleImageView) findViewById(R.id.bigcircle);
         headerImage = (ImageView) findViewById(R.id.nav_header_img);
         headerText = (TextView) findViewById(R.id.nav_header_text);
         headerArrow = (ImageView) findViewById(R.id.nav_header_arrow);
+
+/*        if(Build.VERSION.SDK_INT >= 21) {
+            ((MarginLayoutParams) bigCircle.getLayoutParams()).topMargin +=
+                    UIUtils.getStatusBarHeight(getContext());
+        }*/
 
         header.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,6 +123,7 @@ public class AccountNavigationView extends NavigationView {
                 showNavigationMenu();
             }
         });
+        super.setNavigationItemSelectedListener(this);
     }
 
     /**
@@ -120,7 +138,28 @@ public class AccountNavigationView extends NavigationView {
             headerImage.setImageDrawable(headerBackground);
         }
 
+        mainNavigationGroup = arr.getResourceId(R.styleable.AccountNavigationView_navigationGroup, mainNavigationGroup);
+        mainAccountGroup = arr.getResourceId(R.styleable.AccountNavigationView_accountGroup, mainAccountGroup);
+
+        addNavigationGroupId(mainNavigationGroup);
+        addAccountGroupId(mainAccountGroup);
+
+        int selectedNavigationItemId = arr.getResourceId(R.styleable.AccountNavigationView_selectedNavigationItem, 0);
+        int selectedAccountItemId = arr.getResourceId(R.styleable.AccountNavigationView_selectedAccountItem, 0);
+
+        selectItem(selectedNavigationItemId);
+        selectItem(selectedAccountItemId);
+
         arr.recycle();
+    }
+
+    public void setBigCircleDrawable(Drawable drawable){
+        bigCircle.setImageDrawable(drawable);
+    }
+
+    @Override
+    public void setNavigationItemSelectedListener(OnNavigationItemSelectedListener navigationItemSelectedListener) {
+        this.navigationItemSelectedListener = navigationItemSelectedListener;
     }
 
     /**
@@ -137,6 +176,10 @@ public class AccountNavigationView extends NavigationView {
      */
     public void setHeaderText(String text){
         headerText.setText(text);
+    }
+
+    public MenuItem addAccount(String name, int id){
+        return getMenu().add(mainAccountGroup, id, 0, name).setCheckable(true);
     }
 
     public void addNavigationItemId(@IdRes int id){
@@ -168,7 +211,7 @@ public class AccountNavigationView extends NavigationView {
         if(isInEditMode()){
             headerImage.setImageDrawable(new ColorDrawable(Color.BLACK));
         } else {
-            headerImage.setImageDrawable(WallpaperManager.getInstance(getContext()).getFastDrawable());
+            headerImage.setImageDrawable(WallpaperManager.getInstance(getContext()).getDrawable());
         }
     }
 
@@ -177,6 +220,23 @@ public class AccountNavigationView extends NavigationView {
             setStandardHeaderBackground();
         } else {
             headerImage.setImageDrawable(drawable);
+        }
+    }
+
+    public void selectItem(@IdRes int id){
+        selectItem(getMenu().findItem(id));
+    }
+
+    public void selectItem(MenuItem item){
+        if(item != null){
+            if(item.getGroupId() == mainNavigationGroup){
+                selectedNavigationItem = item;
+                item.setChecked(!accountsAreShown);
+            } else if(item.getGroupId() == mainAccountGroup){
+                selectedAccountItem = item;
+                item.setChecked(accountsAreShown);
+                setHeaderText(item.getTitle().toString());
+            }
         }
     }
 
@@ -235,9 +295,8 @@ public class AccountNavigationView extends NavigationView {
      * @param ids list of items ids
      * @param visible If true the items will be made visible, otherwise invisible.
      */
-    private void makeItemListVisible(List<Integer> ids, boolean visible){
-        for (int i = 0; i < ids.size(); i++) {
-            Integer id = ids.get(i);
+    private void makeItemListVisible(Set<Integer> ids, boolean visible){
+        for (Integer id : ids) {
             getMenu().findItem(id).setVisible(visible);
         }
     }
@@ -247,9 +306,8 @@ public class AccountNavigationView extends NavigationView {
      * @param ids list of group ids
      * @param visible If true the groups will be made visible, otherwise invisible.
      */
-    private void makeGroupListVisible(List<Integer> ids, boolean visible){
-        for (int i = 0; i < ids.size(); i++) {
-            Integer id = ids.get(i);
+    private void makeGroupListVisible(Set<Integer> ids, boolean visible){
+        for (Integer id : ids){
             getMenu().setGroupVisible(id, visible);
         }
     }
@@ -260,9 +318,7 @@ public class AccountNavigationView extends NavigationView {
     public void showNavigationMenu(){
         makeAccountListVisible(false);
 
-        if(listener != null){
-            listener.onNavigationMenuShown();
-        }
+        onNavigationMenuShown();
     }
 
     /**
@@ -271,9 +327,7 @@ public class AccountNavigationView extends NavigationView {
     public void showAccounts(){
          makeAccountListVisible(true);
 
-        if(listener != null){
-            listener.onAccountsShown();
-        }
+        onAccountsShown();
     }
 
     /**
@@ -283,9 +337,7 @@ public class AccountNavigationView extends NavigationView {
         animateMenuItemsVisibility(new Callback() {
             @Override
             public void onFinished() {
-                if(listener != null){
-                    listener.onNavigationMenuShown();
-                }
+                onNavigationMenuShown();
 
                 makeAccountListVisible(false);
                 animateMenuItemsVisibility(null, true);
@@ -300,9 +352,7 @@ public class AccountNavigationView extends NavigationView {
         animateMenuItemsVisibility(new Callback() {
             @Override
             public void onFinished() {
-                if(listener != null){
-                    listener.onAccountsShown();
-                }
+                onAccountsShown();
 
                 showAccounts();
                 animateMenuItemsVisibility(null, true);
@@ -310,15 +360,35 @@ public class AccountNavigationView extends NavigationView {
         }, false);
     }
 
-    /**
-     * converts dp into pixels
-     */
-    private float dpToPx(int dp){
-        return TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                dp,
-                getContext().getResources().getDisplayMetrics()
-        );
+    protected void onNavigationMenuShown(){
+        if(selectedNavigationItem != null){
+            selectedNavigationItem.setChecked(true);
+        }
+
+        if(listener != null){
+            listener.onNavigationMenuShown();
+        }
+    }
+
+    protected void onAccountsShown(){
+        if(selectedAccountItem != null){
+            selectedAccountItem.setChecked(true);
+        }
+
+        if(listener != null){
+            listener.onAccountsShown();
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem menuItem) {
+        selectItem(menuItem);
+
+        if(navigationItemSelectedListener != null){
+            navigationItemSelectedListener.onNavigationItemSelected(menuItem);
+        }
+
+        return true;
     }
 
     /**
@@ -334,67 +404,6 @@ public class AccountNavigationView extends NavigationView {
     public interface DisplayListener {
         void onNavigationMenuShown();
         void onAccountsShown();
-    }
 
-    public static class ItemClickHelper implements OnNavigationItemSelectedListener, DisplayListener {
-
-        private AccountNavigationView view;
-
-        private int navigationGroup;
-        private int accountGroup;
-
-        private MenuItem selectedNavigationItem;
-        private MenuItem selectedAccountItem;
-
-        private OnNavigationItemSelectedListener navigationItemSelectedListener;
-        private DisplayListener displayListener;
-
-        public ItemClickHelper(AccountNavigationView view,
-                               @IdRes int navigationGroup, @IdRes int firstNavigationSelection,
-                               @IdRes int accountGroup,    @IdRes int firstAccountSelection){
-            this.view = view;
-
-            this.navigationGroup = navigationGroup;
-            this.accountGroup = accountGroup;
-
-            this.selectedNavigationItem = view.getMenu().findItem(firstNavigationSelection);
-            this.selectedAccountItem = view.getMenu().findItem(firstAccountSelection);
-
-            view.setNavigationItemSelectedListener(this);
-            view.setDisplayListener(this);
-        }
-
-        public void setNavigationItemSelectedListener(OnNavigationItemSelectedListener externalListener) {
-            this.navigationItemSelectedListener = externalListener;
-        }
-
-        public void setDisplayListener(DisplayListener displayListener) {
-            this.displayListener = displayListener;
-        }
-
-        @Override
-        public boolean onNavigationItemSelected(MenuItem menuItem) {
-            if(menuItem.getGroupId() == navigationGroup){
-                selectedNavigationItem = menuItem;
-            } else if(menuItem.getGroupId() == accountGroup){
-                selectedAccountItem = menuItem;
-            }
-
-            if(navigationItemSelectedListener != null){
-                navigationItemSelectedListener.onNavigationItemSelected(menuItem);
-            }
-
-            return true;
-        }
-
-        @Override
-        public void onNavigationMenuShown() {
-            selectedNavigationItem.setChecked(true);
-        }
-
-        @Override
-        public void onAccountsShown() {
-            selectedAccountItem.setChecked(true);
-        }
     }
 }

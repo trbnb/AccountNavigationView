@@ -1,8 +1,11 @@
 package de.trbnb.accountnavigationview;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import de.trbnb.library.AccountNavigationView;
 
@@ -21,18 +24,14 @@ public class MainActivity extends AppCompatActivity {
         accountNavigationView = (AccountNavigationView) findViewById(R.id.nav);
         accountNavigationView.setHeaderText(R.string.not_logged_in);
 
-        accountNavigationView.addNavigationGroupId(R.id.navigation_primary);
         accountNavigationView.addNavigationItemId(R.id.navigation_secondary);
-        accountNavigationView.addAccountGroupId(R.id.accounts_primary);
         accountNavigationView.addAccountItemId(R.id.accounts_secondary);
 
-        AccountNavigationView.ItemClickHelper helper = new AccountNavigationView.ItemClickHelper(
-                accountNavigationView,
-                R.id.navigation_primary,
-                R.id.nav_first,
-                R.id.accounts_primary,
-                R.id.acc_first
-        );
+        accountNavigationView.addAccount("Jeff", 0);
+        MenuItem item = accountNavigationView.addAccount("Mathias", 0);
+        accountNavigationView.addAccount("Alexander", 0);
 
+        accountNavigationView.selectItem(item);
+        accountNavigationView.setBigCircleDrawable(new ColorDrawable(Color.WHITE));
     }
 }

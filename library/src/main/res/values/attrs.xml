@@ -2,12 +2,9 @@
 <resources>
     <declare-styleable name="AccountNavigationView">
         <attr name="headerBackground" format="reference"/>
-    </declare-styleable>
-
-    <declare-styleable name="NavigationView">
-        <attr name="itemBackground" format="reference"/>
-        <attr name="itemIconTint" format="reference"/>
-        <attr name="itemTextAppearance" format="reference"/>
-        <attr name="itemTextColor" format="color"/>
+        <attr name="navigationGroup" format="reference"/>
+        <attr name="accountGroup" format="reference"/>
+        <attr name="selectedNavigationItem" format="reference"/>
+        <attr name="selectedAccountItem" format="reference"/>
     </declare-styleable>
 </resources>

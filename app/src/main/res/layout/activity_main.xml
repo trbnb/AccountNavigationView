@@ -27,6 +27,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        app:menu="@menu/menu_nav_test"/>
+        app:menu="@menu/menu_nav_test"
+        app:selectedNavigationItem="@+id/cat_a"
+        app:selectedAccountItem="@+id/notloggedin"/>
 
 </android.support.v4.widget.DrawerLayout>
