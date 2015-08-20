@@ -11,6 +11,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.IdRes;
+import android.support.annotation.MenuRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.NavigationView;
@@ -147,8 +148,8 @@ public class AccountNavigationView extends NavigationView implements NavigationV
             headerImage.setImageDrawable(headerBackground);
         }
 
-        mainNavigationGroup = arr.getResourceId(R.styleable.AccountNavigationView_navigationGroup, mainNavigationGroup);
-        mainAccountGroup = arr.getResourceId(R.styleable.AccountNavigationView_accountGroup, mainAccountGroup);
+        setMainNavigationGroup(arr.getResourceId(R.styleable.AccountNavigationView_navigationGroup, mainNavigationGroup));
+        setMainAccountGroup(arr.getResourceId(R.styleable.AccountNavigationView_accountGroup, mainAccountGroup));
 
         addNavigationGroupId(mainNavigationGroup);
         addAccountGroupId(mainAccountGroup);
@@ -160,6 +161,25 @@ public class AccountNavigationView extends NavigationView implements NavigationV
         selectItem(selectedAccountItemId);
 
         arr.recycle();
+    }
+
+    public void inflateMenu(@MenuRes int resId, @IdRes int navigationGroup, @IdRes int accountGroup) {
+        super.inflateMenu(resId);
+
+        setMainNavigationGroup(navigationGroup);
+        setMainAccountGroup(accountGroup);
+    }
+
+    private void setMainNavigationGroup(@IdRes int navigationGroup){
+        this.mainNavigationGroup = navigationGroup;
+
+        navigationGroupIds.add(navigationGroup);
+    }
+
+    private void setMainAccountGroup(@IdRes int accountGroup){
+        this.mainAccountGroup = accountGroup;
+
+        navigationGroupIds.add(accountGroup);
     }
 
     @Override
