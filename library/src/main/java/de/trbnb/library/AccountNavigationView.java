@@ -2,12 +2,14 @@ package de.trbnb.library;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -16,6 +18,8 @@ import android.util.AttributeSet;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -38,7 +42,7 @@ public class AccountNavigationView extends NavigationView implements NavigationV
     private ImageView headerImage;
     private TextView headerText;
     private ImageView headerArrow;
-    private CircleImageView bigCircle;
+    private CircleImageView headerProfilePicture;
 
     private boolean accountsAreShown = false;
 
@@ -90,15 +94,20 @@ public class AccountNavigationView extends NavigationView implements NavigationV
         inflateHeaderView(R.layout.nav_header);
 
         header = (FrameLayout) findViewById(R.id.nav_header);
-        bigCircle = (CircleImageView) findViewById(R.id.bigcircle);
+        headerProfilePicture = (CircleImageView) findViewById(R.id.bigcircle);
         headerImage = (ImageView) findViewById(R.id.nav_header_img);
         headerText = (TextView) findViewById(R.id.nav_header_text);
         headerArrow = (ImageView) findViewById(R.id.nav_header_arrow);
 
-/*        if(Build.VERSION.SDK_INT >= 21) {
-            ((MarginLayoutParams) bigCircle.getLayoutParams()).topMargin +=
-                    UIUtils.getStatusBarHeight(getContext());
-        }*/
+        if(Build.VERSION.SDK_INT >= 19 && getContext() instanceof Activity) {
+            Window window = ((Activity) getContext()).getWindow();
+            int flags = window.getAttributes().flags;
+
+            if ((flags & WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS) != 0) {
+                ((MarginLayoutParams) findViewById(R.id.nav_header_foreground).getLayoutParams()).topMargin +=
+                        UIUtils.getStatusBarHeight(getContext());
+            }
+        }
 
         header.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -153,13 +162,13 @@ public class AccountNavigationView extends NavigationView implements NavigationV
         arr.recycle();
     }
 
-    public void setBigCircleDrawable(Drawable drawable){
-        bigCircle.setImageDrawable(drawable);
-    }
-
     @Override
     public void setNavigationItemSelectedListener(OnNavigationItemSelectedListener navigationItemSelectedListener) {
         this.navigationItemSelectedListener = navigationItemSelectedListener;
+    }
+
+    public void setHeaderProfilePicture(Drawable drawable) {
+        headerProfilePicture.setImageDrawable(drawable);
     }
 
     /**
@@ -179,7 +188,17 @@ public class AccountNavigationView extends NavigationView implements NavigationV
     }
 
     public MenuItem addAccount(String name, int id){
-        return getMenu().add(mainAccountGroup, id, 0, name).setCheckable(true);
+        return addAccount(
+                name,
+                id,
+                null);
+    }
+
+    public MenuItem addAccount(String name, int id, Drawable drawable){
+        return getMenu()
+                .add(mainAccountGroup, id, 0, name)
+                .setCheckable(true)
+                .setIcon(drawable);
     }
 
     public void addNavigationItemId(@IdRes int id){

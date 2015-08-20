@@ -32,6 +32,6 @@ public class MainActivity extends AppCompatActivity {
         accountNavigationView.addAccount("Alexander", 0);
 
         accountNavigationView.selectItem(item);
-        accountNavigationView.setBigCircleDrawable(new ColorDrawable(Color.WHITE));
+        accountNavigationView.setHeaderProfilePicture(new ColorDrawable(Color.YELLOW));
     }
 }
