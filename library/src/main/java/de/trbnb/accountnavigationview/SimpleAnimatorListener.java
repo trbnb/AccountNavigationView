@@ -1,4 +1,4 @@
-package de.trbnb.library;
+package de.trbnb.accountnavigationview;
 
 import android.animation.Animator;
 

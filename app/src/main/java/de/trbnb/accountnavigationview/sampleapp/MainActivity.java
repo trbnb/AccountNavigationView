@@ -1,4 +1,4 @@
-package de.trbnb.accountnavigationview;
+package de.trbnb.accountnavigationview.sampleapp;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-import de.trbnb.library.AccountNavigationView;
+import de.trbnb.accountnavigationview.AccountNavigationView;
 
 
 public class MainActivity extends AppCompatActivity {

@@ -1,4 +1,4 @@
-package de.trbnb.library;
+package de.trbnb.accountnavigationview.sampleapp;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

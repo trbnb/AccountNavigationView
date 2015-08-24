@@ -21,7 +21,7 @@
 
     </LinearLayout>
 
-    <de.trbnb.library.AccountNavigationView
+    <de.trbnb.accountnavigationview.AccountNavigationView
         android:id="@+id/nav"
         android:layout_width="320dp"
         android:layout_height="match_parent"
