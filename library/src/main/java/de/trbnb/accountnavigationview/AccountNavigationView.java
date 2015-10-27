@@ -2,14 +2,12 @@ package de.trbnb.accountnavigationview;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.annotation.IdRes;
 import android.support.annotation.MenuRes;
 import android.support.annotation.Nullable;
@@ -19,8 +17,6 @@ import android.util.AttributeSet;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -99,16 +95,6 @@ public class AccountNavigationView extends NavigationView implements NavigationV
         headerImage = (ImageView) findViewById(R.id.nav_header_img);
         headerText = (TextView) findViewById(R.id.nav_header_text);
         headerArrow = (ImageView) findViewById(R.id.nav_header_arrow);
-
-        if(Build.VERSION.SDK_INT >= 19 && getContext() instanceof Activity) {
-            Window window = ((Activity) getContext()).getWindow();
-            int flags = window.getAttributes().flags;
-
-            if ((flags & WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS) != 0) {
-                ((MarginLayoutParams) findViewById(R.id.nav_header_foreground).getLayoutParams()).topMargin +=
-                        UIUtils.getStatusBarHeight(getContext());
-            }
-        }
 
         header.setOnClickListener(new View.OnClickListener() {
             @Override
