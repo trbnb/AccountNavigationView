@@ -88,13 +88,13 @@ public class AccountNavigationView extends NavigationView implements NavigationV
         accountItemIds = new HashSet<>();
         accountGroupIds = new HashSet<>();
 
-        inflateHeaderView(R.layout.nav_header);
+        View newHeader = inflateHeaderView(R.layout.nav_header);
 
-        header = (FrameLayout) findViewById(R.id.nav_header);
-        headerProfilePicture = (CircleImageView) findViewById(R.id.bigcircle);
-        headerImage = (ImageView) findViewById(R.id.nav_header_img);
-        headerText = (TextView) findViewById(R.id.nav_header_text);
-        headerArrow = (ImageView) findViewById(R.id.nav_header_arrow);
+        header = (FrameLayout) newHeader.findViewById(R.id.nav_header);
+        headerProfilePicture = (CircleImageView) newHeader.findViewById(R.id.bigcircle);
+        headerImage = (ImageView) newHeader.findViewById(R.id.nav_header_img);
+        headerText = (TextView) newHeader.findViewById(R.id.nav_header_text);
+        headerArrow = (ImageView) newHeader.findViewById(R.id.nav_header_arrow);
 
         header.setOnClickListener(new View.OnClickListener() {
             @Override
